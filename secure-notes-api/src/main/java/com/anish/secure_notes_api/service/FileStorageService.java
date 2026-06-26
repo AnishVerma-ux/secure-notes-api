@@ -77,4 +77,18 @@ public class FileStorageService {
             throw new RuntimeException("File not found", e);
         }
     }
+    public void deleteFile(String fileName) {
+
+        try {
+
+            Path filePath = Paths.get(uploadDir)
+                    .resolve(fileName)
+                    .normalize();
+
+            Files.deleteIfExists(filePath);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Could not delete file", e);
+        }
+    }
 }

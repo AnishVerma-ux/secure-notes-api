@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
@@ -93,5 +94,22 @@ public class NoteController {
                     return ResponseEntity.ok("Note deleted successfully");
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchNotes(
+            @RequestParam String keyword,
+            Authentication authentication) {
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return ResponseEntity.ok(
+                noteRepository.findByOwnerAndTitleContainingIgnoreCaseOrOwnerAndContentContainingIgnoreCase(
+                        user,
+                        keyword,
+                        user,
+                        keyword
+                )
+        );
     }
 }

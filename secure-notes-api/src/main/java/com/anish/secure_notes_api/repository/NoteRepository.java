@@ -10,4 +10,13 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     List<Note> findByOwner(User owner);
 
+
+        List<Note> findByOwnerAndTitleContainingIgnoreCaseOrOwnerAndContentContainingIgnoreCase(
+                User owner,
+                String title,
+                User owner2,
+                String content
+        );
+
+
 }

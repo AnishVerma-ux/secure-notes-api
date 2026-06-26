@@ -15,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/attachments")
 public class AttachmentController {
@@ -95,4 +97,51 @@ public class AttachmentController {
                 )
                 .body(resource);
     }
+    @DeleteMapping("/{attachmentId}")
+    public ResponseEntity<?> deleteAttachment(
+            @PathVariable Long attachmentId,
+            Authentication authentication) {
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Attachment attachment = attachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new RuntimeException("Attachment not found"));
+
+        // Only the owner of the note can delete the attachment
+        if (!attachment.getNote().getOwner().getId().equals(user.getId())) {
+            return ResponseEntity.status(403)
+                    .body("You cannot delete another user's attachment.");
+        }
+
+        // Delete the physical file
+        fileStorageService.deleteFile(attachment.getFilePath());
+
+        // Delete the database record
+        attachmentRepository.delete(attachment);
+
+        return ResponseEntity.ok("Attachment deleted successfully");
+    }
+    @GetMapping("/note/{noteId}")
+    public ResponseEntity<?> getAttachmentsByNote(
+            @PathVariable Long noteId,
+            Authentication authentication) {
+
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Note note = noteRepository.findById(noteId)
+                .orElseThrow(() -> new RuntimeException("Note not found"));
+        System.out.println("Logged-in user ID: " + user.getId());
+        System.out.println("Note owner ID: " + note.getOwner().getId());
+        if (!note.getOwner().getId().equals(user.getId())) {
+            return ResponseEntity.status(403)
+                    .body("You cannot view another user's attachments.");
+        }
+
+        List<Attachment> attachments = attachmentRepository.findByNote(note);
+
+        return ResponseEntity.ok(attachments);
+    }
+
 }
