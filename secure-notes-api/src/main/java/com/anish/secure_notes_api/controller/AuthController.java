@@ -97,9 +97,15 @@ public class AuthController {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email"));
 
+        System.out.println("================================");
+        System.out.println("User Email   : " + user.getEmail());
+        System.out.println("Enabled      : " + user.isEnabled());
+        System.out.println("Password OK? : " +
+                passwordEncoder.matches(request.getPassword(), user.getPassword()));
+        System.out.println("================================");
+
         if (!user.isEnabled()) {
-            return ResponseEntity.badRequest()
-                    .body("Please verify your email first.");
+            return ResponseEntity.badRequest().body("Please verify your email first.");
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
