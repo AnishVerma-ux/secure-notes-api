@@ -1,160 +1,195 @@
-# Secure Notes API
+# 🔐 Secure Notes API
 
-A secure REST API built with Spring Boot that allows users to create, manage, and protect their personal notes using JWT Authentication. Users can also upload and download attachments such as images and PDF files.
-
-## Features
-
-- User Registration
-- User Login with JWT Authentication
-- Secure Password Encryption using BCrypt
-- Create Notes
-- View Personal Notes
-- Update Notes
-- Delete Notes
-- Upload Image/PDF Attachments
-- Download Attachments
-- User Authorization (Users can access only their own notes and files)
-- MySQL Database Integration
-- Spring Security
-- File Storage on Local Disk
+A secure REST API built with **Java, Spring Boot, Spring Security, JWT, MySQL, and Gmail SMTP**. The application allows users to register, verify their email, securely log in, manage notes, upload files, and reset forgotten passwords.
 
 ---
 
-## Tech Stack
-
-- Java 22
-- Spring Boot
-- Spring Security
-- Spring Data JPA (Hibernate)
-- JWT Authentication
-- MySQL
-- Maven
-- Multipart File Upload
-- REST APIs
-
----
-
-## Project Structure
-
-```
-src
- ├── config
- ├── controller
- ├── dto
- ├── entity
- ├── repository
- ├── security
- ├── service
- └── resources
-```
-
----
-
-## API Endpoints
+## 🚀 Features
 
 ### Authentication
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | /api/auth/register | Register User |
-| POST | /api/auth/login | Login User |
+* User Registration
+* Email Verification using OTP
+* JWT Authentication
+* Secure Login
+* Password Encryption using BCrypt
+
+### Password Recovery
+
+* Forgot Password via Email
+* OTP Verification
+* Reset Password
+
+### Notes Management
+
+* Create Note
+* View Notes
+* Update Note
+* Delete Note
+
+### File Upload
+
+* Upload files
+* Store uploaded files securely
+
+### Security
+
+* Spring Security
+* JWT Authorization
+* Protected APIs
+* Password Encryption
+* Email Verification
 
 ---
 
-### Notes
+## 🛠 Tech Stack
 
-| Method | Endpoint |
-|---------|----------|
-| GET | /notes |
-| POST | /notes |
-| PUT | /notes/{id} |
-| DELETE | /notes/{id} |
+### Backend
+
+* Java 22
+* Spring Boot
+* Spring Security
+* Spring Data JPA
+* Hibernate
+
+### Database
+
+* MySQL
+
+### Authentication
+
+* JWT (JSON Web Token)
+
+### Email Service
+
+* Gmail SMTP
+
+### Build Tool
+
+* Maven
 
 ---
 
-### Attachments
+## 📁 Project Structure
 
-| Method | Endpoint |
-|---------|----------|
-| POST | /attachments/notes/{noteId} |
-| GET | /attachments/{attachmentId} |
-
----
-
-## Security
-
-- JWT Authentication
-- BCrypt Password Encryption
-- Stateless Authentication
-- User-level Authorization
-
----
-
-## Database
-
-MySQL is used as the database.
-
-Example configuration:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/secure_notes_db
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
-
-jwt.secret=YOUR_SECRET_KEY
+```
+src
+├── controller
+├── service
+├── repository
+├── entity
+├── dto
+├── security
+├── config
+└── util
 ```
 
 ---
 
-## Running the Project
+## 🔄 Authentication Flow
 
-### Clone Repository
+1. Register a new user.
+2. OTP is sent to the registered email.
+3. Verify OTP.
+4. Login using email and password.
+5. Receive JWT Token.
+6. Access secured APIs using the JWT Token.
 
-```bash
+---
+
+## 🔑 Forgot Password Flow
+
+1. Click "Forgot Password".
+2. Enter registered email.
+3. Receive OTP on email.
+4. Verify OTP.
+5. Set a new password.
+6. Login with the new password.
+
+---
+
+## 📧 Email Features
+
+* Account Verification
+* Forgot Password OTP
+* Gmail SMTP Integration
+
+---
+
+## ⚙ Environment Variables
+
+Create environment variables before running the project.
+
+```
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+
+DB_USERNAME=root
+DB_PASSWORD=your_database_password
+
+JWT_SECRET=your_secret_key
+```
+
+---
+
+## ▶ Run the Project
+
+Clone the repository
+
+```
 git clone https://github.com/AnishVerma-ux/secure-notes-api.git
 ```
 
-### Navigate
+Move inside the project
 
-```bash
+```
 cd secure-notes-api
 ```
 
-### Build
+Run
 
-```bash
-mvn clean install
 ```
-
-### Run
-
-```bash
 mvn spring-boot:run
 ```
 
-The application will start at:
+---
 
-```
-http://localhost:8081
-```
+## 🔐 API Endpoints
+
+### Authentication
+
+* POST /api/auth/register
+* POST /api/auth/verify
+* POST /api/auth/login
+* POST /api/auth/forgot-password
+* POST /api/auth/verify-forgot-otp
+* POST /api/auth/reset-password
+
+### Notes
+
+* POST /api/notes
+* GET /api/notes
+* PUT /api/notes/{id}
+* DELETE /api/notes/{id}
 
 ---
 
-## Future Improvements
+## 📌 Future Improvements
 
-- Delete Attachments
-- View Attachments by Note
-- Swagger/OpenAPI Documentation
-- Pagination
-- Search Notes
-- Cloud Storage (AWS S3 / Cloudinary)
-- Docker Support
+* React Frontend
+* Docker Support
+* Refresh Token Authentication
+* Role-Based Authorization
+* Pagination & Sorting
+* Swagger Documentation
+* Unit Testing
+* CI/CD Pipeline
+* AWS Deployment
 
 ---
 
-## Author
+## 👨‍💻 Author
 
 **Anish Verma**
 
-GitHub:
-https://github.com/AnishVerma-ux
+GitHub: https://github.com/AnishVerma-ux
