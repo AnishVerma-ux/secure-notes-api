@@ -6,6 +6,9 @@ import Navbar from "../../components/Navbar/Navbar";
 import NoteCard from "../../components/NoteCard/NoteCard";
 import NoteModal from "../../components/NoteModal/NoteModal";
 import NoteViewModal from "../../components/NoteViewModal/NoteViewModal";
+import ChatBot from "../../components/ChatBot/ChatBot";
+
+// add before closing </div> of the dashboard
 
 import noteService from "../../services/noteService";
 
@@ -172,7 +175,7 @@ function Dashboard() {
                     onClose={() => setViewingNote(null)}
                 />
             )}
-
+<ChatBot />
         </div>
     );
 }

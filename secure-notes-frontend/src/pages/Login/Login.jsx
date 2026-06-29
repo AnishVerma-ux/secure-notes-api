@@ -69,7 +69,7 @@ function Login() {
           <h1>Secure Notes</h1>
         </div>
 
-        <h2>Your Notes. Protected. Always.</h2>
+       
 
         <p>
           Store your personal notes securely using JWT Authentication and Email
@@ -79,6 +79,16 @@ function Login() {
         </p>
 
         <div className="features">
+          <div className="ai-preview-card">
+    <div className="ai-icon">🤖</div>
+
+    <div className="ai-content">
+        <h4>AI Notes Assistant</h4>
+        <p>
+            Ask questions about your notes using RAG.
+        </p>
+    </div>
+</div>
           <div className="feature">
             <FaCheckCircle />
             <span>JWT Authentication</span>
