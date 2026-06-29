@@ -1,38 +1,38 @@
 .modal-overlay{
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.5);
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
 
     display:flex;
-
     justify-content:center;
-
     align-items:center;
+
+    padding:20px;
 
     z-index:1000;
 }
 
 .modal{
 
-    width:90%;
+    width:100%;
+    max-width:650px;
 
-    max-width:600px;
+    max-height:90vh;
+    overflow-y:auto;
 
     background:white;
-
-    border-radius:15px;
+    border-radius:16px;
 
     padding:30px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.18);
 }
 
 .modal h2{
 
-    margin-bottom:20px;
-
-    color:#1e293b;
+    margin-bottom:22px;
+    font-size:28px;
+    color:#1f2937;
 }
 
 .modal input,
@@ -40,65 +40,136 @@
 
     width:100%;
 
-    padding:15px;
+    padding:14px 16px;
 
     border:1px solid #d1d5db;
-
     border-radius:10px;
 
-    margin-bottom:20px;
+    margin-bottom:18px;
+
+    font-size:15px;
 
     outline:none;
 
-    font-size:15px;
+    transition:.2s;
+}
+
+.modal textarea{
+
+    resize:vertical;
+    min-height:180px;
 }
 
 .modal input:focus,
 .modal textarea:focus{
 
     border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
 }
 
 .modal-buttons{
 
     display:flex;
-
     justify-content:flex-end;
+    gap:12px;
+}
 
-    gap:15px;
+.cancel-btn,
+.save-btn{
+
+    padding:12px 22px;
+
+    border:none;
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+    font-weight:600;
+
+    transition:.2s;
 }
 
 .cancel-btn{
 
     background:#e5e7eb;
-
     color:#111827;
+}
 
-    border:none;
+.cancel-btn:hover{
 
-    padding:12px 20px;
-
-    border-radius:8px;
-
-    cursor:pointer;
+    background:#d1d5db;
 }
 
 .save-btn{
 
     background:#2563eb;
-
     color:white;
-
-    border:none;
-
-    padding:12px 20px;
-
-    border-radius:8px;
-
-    cursor:pointer;
 }
 
 .save-btn:hover{
 
     background:#1d4ed8;
+}
+
+/* Tablet */
+
+@media (max-width:768px){
+
+    .modal{
+
+        padding:22px;
+    }
+
+    .modal h2{
+
+        font-size:24px;
+    }
+
+}
+
+/* Mobile */
+
+@media (max-width:480px){
+
+    .modal-overlay{
+
+        padding:12px;
+        align-items:flex-end;
+    }
+
+    .modal{
+
+        border-radius:18px 18px 0 0;
+
+        max-width:100%;
+        width:100%;
+
+        max-height:92vh;
+
+        padding:18px;
+    }
+
+    .modal h2{
+
+        font-size:20px;
+        text-align:center;
+    }
+
+    .modal textarea{
+
+        min-height:140px;
+    }
+
+    .modal-buttons{
+
+        flex-direction:column-reverse;
+    }
+
+    .cancel-btn,
+    .save-btn{
+
+        width:100%;
+    }
+
 }

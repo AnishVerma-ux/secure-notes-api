@@ -1,29 +1,42 @@
+import { useNavigate, useLocation } from "react-router-dom";
+import authService from "../../services/authService";
 import "./Sidebar.css";
 
 function Sidebar() {
-  return (
-    <div className="sidebar">
+    const navigate = useNavigate();
+    const location = useLocation();
 
-      <h2 className="logo">Secure Notes</h2>
+    const handleLogout = () => {
+        const confirm = window.confirm("Are you sure you want to logout?");
+        if (!confirm) return;
+        authService.logout();
+    };
 
-      <ul>
-
-        <li className="active">
-          Dashboard
-        </li>
-
-        <li>
-          Profile
-        </li>
-
-        <li>
-          Logout
-        </li>
-
-      </ul>
-
-    </div>
-  );
+    return (
+        <div className="sidebar">
+            <div className="sidebar-brand">
+                <span className="brand-icon">🔒</span>
+                <span>Secure Notes</span>
+            </div>
+            <ul className="sidebar-nav">
+                <li
+                    className={location.pathname === "/dashboard" ? "active" : ""}
+                    onClick={() => navigate("/dashboard")}
+                >
+                    <span>📋</span> Dashboard
+                </li>
+                <li
+                    className={location.pathname === "/profile" ? "active" : ""}
+                    onClick={() => navigate("/profile")}
+                >
+                    <span>👤</span> Profile
+                </li>
+                <li className="logout" onClick={handleLogout}>
+                    <span>🚪</span> Logout
+                </li>
+            </ul>
+        </div>
+    );
 }
 
 export default Sidebar;

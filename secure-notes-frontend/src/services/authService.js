@@ -1,20 +1,30 @@
 import api from "../api/axiosConfig";
 
-const login = (data)=>{
+const login = (data) => api.post("/auth/login", data);
 
-    return api.post("/auth/login",data);
+const register = (data) => api.post("/auth/register", data);
 
+const logout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
 };
 
-const register=(data)=>{
+const getUser = () => {
+    const token = localStorage.getItem("token");
 
-    return api.post("/auth/register",data);
+    if (!token) return null;
 
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload;
+    } catch {
+        return null;
+    }
 };
 
-export default{
-
+export default {
     login,
-    register
-
+    register,
+    logout,
+    getUser,
 };

@@ -1,53 +1,135 @@
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: #1e3a8a;
+  color: white;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+  margin-bottom: 20px;
+}
+
+.brand-icon {
+  font-size: 24px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.sidebar-nav li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: rgba(255,255,255,.75);
+  transition: .25s;
+}
+
+.sidebar-nav li:hover {
+  background: rgba(255,255,255,.1);
+  color: white;
+}
+
+.sidebar-nav li.active {
+  background: #2563eb;
+  color: white;
+}
+
+.logout {
+  margin-top: auto;
+}
+
+.logout:hover {
+  background: rgba(239,68,68,.2);
+  color: #ffb4b4;
+}
+
+
+/* ---------- Tablet ---------- */
+
+@media (max-width:900px){
+
 .sidebar{
-
-    width:250px;
-
-    min-height:100vh;
-
-    background:#1e3a8a;
-
-    color:white;
-
-    padding:30px 20px;
+    width:80px;
+    padding:20px 10px;
 }
 
-.logo{
-
-    margin-bottom:40px;
-
-    font-size:28px;
+.sidebar-brand span:last-child{
+    display:none;
 }
 
-.sidebar ul{
-
-    list-style:none;
+.sidebar-nav li{
+    justify-content:center;
+    font-size:0;
 }
 
-.sidebar li{
-
-    padding:15px;
-
-    margin-bottom:10px;
-
-    border-radius:8px;
-
-    cursor:pointer;
+.sidebar-nav li span{
+    font-size:22px;
 }
 
-.sidebar li:hover{
-
-    background:#2563eb;
 }
 
-.active{
 
-    background:#2563eb;
-}
+/* ---------- Mobile ---------- */
+
+@media (max-width:768px){
+
 .sidebar{
-    width:250px;
-    flex-shrink:0;
-    min-height:100vh;
-    background:#1e3a8a;
-    color:white;
-    padding:30px 20px;
+    width:100%;
+    min-height:auto;
+    height:auto;
+    padding:10px 15px;
+}
+
+.sidebar-brand{
+    justify-content:center;
+    border:none;
+    margin-bottom:12px;
+    padding-bottom:0;
+}
+
+.sidebar-brand span:last-child{
+    display:block;
+    font-size:18px;
+}
+
+.sidebar-nav{
+    flex-direction:row;
+    justify-content:space-around;
+    align-items:center;
+}
+
+.sidebar-nav li{
+    flex-direction:column;
+    gap:5px;
+    padding:8px;
+    font-size:11px;
+}
+
+.sidebar-nav li span{
+    font-size:20px;
+}
+
+.logout{
+    margin-top:0;
+}
+
 }

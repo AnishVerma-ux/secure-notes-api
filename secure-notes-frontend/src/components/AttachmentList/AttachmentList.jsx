@@ -1,90 +1,57 @@
 import { useEffect, useState } from "react";
 import attachmentService from "../../services/attachmentService";
+import "./AttachmentList.css";
 
 function AttachmentList({ noteId }) {
-
     const [files, setFiles] = useState([]);
 
-    useEffect(() => {
-
-        loadFiles();
-
-    }, []);
+    useEffect(() => { loadFiles(); }, []);
 
     const loadFiles = async () => {
-
-        const response =
-            await attachmentService.getAttachments(noteId);
-
+        const response = await attachmentService.getAttachments(noteId);
         setFiles(response.data);
-
     };
 
     const download = async (id, name) => {
-
-        const response =
-            await attachmentService.downloadAttachment(id);
-
-        const url =
-            window.URL.createObjectURL(new Blob([response.data]));
-
-        const link =
-            document.createElement("a");
-
+        const response = await attachmentService.downloadAttachment(id);
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
         link.href = url;
-
         link.download = name;
-
         link.click();
-
     };
 
     const remove = async (id) => {
-
+        if (!window.confirm("Delete this attachment?")) return;
         await attachmentService.deleteAttachment(id);
-
         loadFiles();
-
     };
 
+    if (files.length === 0) return null;
+
     return (
-
-        <div>
-
-            {
-
-                files.map(file => (
-
-                    <div key={file.id}>
-
-                        📎 {file.fileName}
-
+        <div className="attachment-list">
+            {files.map(file => (
+                <div key={file.id} className="attachment-item">
+                    <span className="attachment-name">📎 {file.fileName}</span>
+                    <div className="attachment-actions">
                         <button
-                            onClick={() =>
-                                download(file.id, file.fileName)
-                            }
+                            className="att-btn download"
+                            onClick={() => download(file.id, file.fileName)}
                         >
-                            Download
+                            ⬇
                         </button>
-
                         <button
-                            onClick={() =>
-                                remove(file.id)
-                            }
+                            className="att-btn delete"
+                            onClick={() => remove(file.id)}
                         >
-                            Delete
+                            🗑
                         </button>
-
                     </div>
-
-                ))
-
-            }
-
+                </div>
+            ))}
         </div>
-
     );
-
 }
 
 export default AttachmentList;
