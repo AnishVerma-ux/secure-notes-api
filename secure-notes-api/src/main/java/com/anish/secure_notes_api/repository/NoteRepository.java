@@ -6,17 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface NoteRepository extends JpaRepository<Note, Long> {
 
+public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> findByOwner(User owner);
 
-
-        List<Note> findByOwnerAndTitleContainingIgnoreCaseOrOwnerAndContentContainingIgnoreCase(
-                User owner,
-                String title,
-                User owner2,
-                String content
-        );
-
-
+    // your existing search method stays too
+    List<Note> findByOwnerAndTitleContainingIgnoreCaseOrOwnerAndContentContainingIgnoreCase(
+            User owner1, String title, User owner2, String content);
 }

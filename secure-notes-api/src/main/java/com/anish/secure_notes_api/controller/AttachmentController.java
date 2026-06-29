@@ -6,142 +6,173 @@ import com.anish.secure_notes_api.entity.User;
 import com.anish.secure_notes_api.repository.AttachmentRepository;
 import com.anish.secure_notes_api.repository.NoteRepository;
 import com.anish.secure_notes_api.repository.UserRepository;
-import com.anish.secure_notes_api.service.FileStorageService;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/attachments")
+@RequestMapping("/api/attachments")
 public class AttachmentController {
 
     private final AttachmentRepository attachmentRepository;
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
-    private final FileStorageService fileStorageService;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     public AttachmentController(
             AttachmentRepository attachmentRepository,
             NoteRepository noteRepository,
-            UserRepository userRepository,
-            FileStorageService fileStorageService) {
-
+            UserRepository userRepository
+    ) {
         this.attachmentRepository = attachmentRepository;
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
-        this.fileStorageService = fileStorageService;
     }
 
-    // Upload attachment
-    @PostMapping("/notes/{noteId}")
-    public ResponseEntity<?> uploadAttachment(
+    // Upload File
+    @PostMapping("/upload/{noteId}")
+    public ResponseEntity<?> uploadFile(
             @PathVariable Long noteId,
             @RequestParam("file") MultipartFile file,
-            Authentication authentication) {
+            Authentication authentication
+    ) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        try {
 
-        Note note = noteRepository.findById(noteId)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow();
 
-        // Only owner can upload
-        if (!note.getOwner().getId().equals(user.getId())) {
-            return ResponseEntity.status(403)
-                    .body("You cannot upload files to another user's note.");
+            Note note = noteRepository.findById(noteId)
+                    .orElseThrow();
+
+            if (!note.getOwner().getId().equals(user.getId())) {
+                return ResponseEntity.status(403).body("Access Denied");
+            }
+
+            Path folder = Paths.get(uploadDir);
+
+            if (!Files.exists(folder)) {
+                Files.createDirectories(folder);
+            }
+
+            String storedName =
+                    UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+            Path path = folder.resolve(storedName);
+
+            Files.copy(file.getInputStream(), path);
+
+            Attachment attachment = new Attachment();
+
+            attachment.setFileName(file.getOriginalFilename());
+            attachment.setStoredFileName(storedName);
+            attachment.setFilePath(path.toString());
+            attachment.setFileSize(file.getSize());
+            attachment.setFileType(file.getContentType());
+            attachment.setNote(note);
+
+            attachmentRepository.save(attachment);
+
+            return ResponseEntity.ok(attachment);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity.internalServerError()
+                    .body("Upload Failed");
+
         }
-
-        String storedFileName = fileStorageService.storeFile(file);
-
-        Attachment attachment = new Attachment();
-        attachment.setFileName(file.getOriginalFilename());
-        attachment.setFileType(file.getContentType());
-        attachment.setFilePath(storedFileName);
-        attachment.setNote(note);
-
-        attachmentRepository.save(attachment);
-
-        return ResponseEntity.ok(attachment);
     }
 
-    // Download attachment
-    @GetMapping("/{attachmentId}")
-    public ResponseEntity<Resource> downloadAttachment(
-            @PathVariable Long attachmentId,
-            Authentication authentication) {
+    // Get Attachments
+    @GetMapping("/{noteId}")
+    public List<Attachment> getAttachments(
+            @PathVariable Long noteId
+    ) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return attachmentRepository.findByNoteId(noteId);
 
-        Attachment attachment = attachmentRepository.findById(attachmentId)
-                .orElseThrow(() -> new RuntimeException("Attachment not found"));
-
-        // Only owner can download
-        if (!attachment.getNote().getOwner().getId().equals(user.getId())) {
-            return ResponseEntity.status(403).build();
-        }
-
-        Resource resource = fileStorageService.loadFile(attachment.getFilePath());
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(attachment.getFileType()))
-                .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + attachment.getFileName() + "\""
-                )
-                .body(resource);
     }
-    @DeleteMapping("/{attachmentId}")
-    public ResponseEntity<?> deleteAttachment(
-            @PathVariable Long attachmentId,
-            Authentication authentication) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    // Download
+    @GetMapping("/download/{id}")
+    public ResponseEntity<?> download(
+            @PathVariable Long id
+    ) {
 
-        Attachment attachment = attachmentRepository.findById(attachmentId)
-                .orElseThrow(() -> new RuntimeException("Attachment not found"));
+        try {
 
-        // Only the owner of the note can delete the attachment
-        if (!attachment.getNote().getOwner().getId().equals(user.getId())) {
-            return ResponseEntity.status(403)
-                    .body("You cannot delete another user's attachment.");
+            Attachment attachment =
+                    attachmentRepository.findById(id).orElseThrow();
+
+            Path path = Paths.get(attachment.getFilePath());
+
+            return ResponseEntity.ok()
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" +
+                                    attachment.getFileName() + "\""
+                    )
+                    .body(Files.readAllBytes(path));
+
+        } catch (Exception e) {
+
+            return ResponseEntity.notFound().build();
+
         }
 
-        // Delete the physical file
-        fileStorageService.deleteFile(attachment.getFilePath());
-
-        // Delete the database record
-        attachmentRepository.delete(attachment);
-
-        return ResponseEntity.ok("Attachment deleted successfully");
     }
-    @GetMapping("/note/{noteId}")
-    public ResponseEntity<?> getAttachmentsByNote(
-            @PathVariable Long noteId,
-            Authentication authentication) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    // Delete
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
 
-        Note note = noteRepository.findById(noteId)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
-        System.out.println("Logged-in user ID: " + user.getId());
-        System.out.println("Note owner ID: " + note.getOwner().getId());
-        if (!note.getOwner().getId().equals(user.getId())) {
-            return ResponseEntity.status(403)
-                    .body("You cannot view another user's attachments.");
+        try {
+
+            User user = userRepository.findByEmail(authentication.getName())
+                    .orElseThrow();
+
+            Attachment attachment =
+                    attachmentRepository.findById(id)
+                            .orElseThrow();
+
+            if (!attachment.getNote().getOwner().getId().equals(user.getId())) {
+
+                return ResponseEntity.status(403)
+                        .body("Access Denied");
+
+            }
+
+            Files.deleteIfExists(
+                    Paths.get(attachment.getFilePath())
+            );
+
+            attachmentRepository.delete(attachment);
+
+            return ResponseEntity.ok("Deleted");
+
+        } catch (Exception e) {
+
+            return ResponseEntity.internalServerError()
+                    .body("Delete Failed");
+
         }
 
-        List<Attachment> attachments = attachmentRepository.findByNote(note);
-
-        return ResponseEntity.ok(attachments);
     }
 
 }

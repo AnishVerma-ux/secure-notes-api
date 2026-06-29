@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
-@RequestMapping("/notes")
+@RequestMapping("/api/notes")
 public class NoteController {
 
     private final NoteRepository noteRepository;
@@ -27,14 +27,12 @@ public class NoteController {
 
     // Get all notes of logged-in user
     @GetMapping
-    public List<Note> getMyNotes(Authentication authentication) {
-
+    public ResponseEntity<?> getMyNotes(Authentication authentication) {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return noteRepository.findByOwner(user);
+        return ResponseEntity.ok(noteRepository.findByOwner(user));
     }
-
     // Create a new note
     @PostMapping
     public Note createNote(@Valid @RequestBody Note note,

@@ -75,14 +75,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .setAuthentication(authentication);
 
                     System.out.println("Authentication SUCCESS");
-                } else {
-                    System.out.println("Token Validation FAILED");
                 }
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
+
             System.out.println("JWT Exception:");
             e.printStackTrace();
+
         }
 
         filterChain.doFilter(request, response);

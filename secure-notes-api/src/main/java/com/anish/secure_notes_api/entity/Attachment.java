@@ -1,5 +1,6 @@
 package com.anish.secure_notes_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,26 +13,20 @@ public class Attachment {
 
     private String fileName;
 
+    private String storedFileName;
+
     private String fileType;
+
+    private Long fileSize;
 
     private String filePath;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "note_id")
+    @JsonIgnore
     private Note note;
 
     public Attachment() {
-    }
-
-    public Attachment(String fileName,
-                      String fileType,
-                      String filePath,
-                      Note note) {
-
-        this.fileName = fileName;
-        this.fileType = fileType;
-        this.filePath = filePath;
-        this.note = note;
     }
 
     public Long getId() {
@@ -42,28 +37,48 @@ public class Attachment {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public String getStoredFileName() {
+        return storedFileName;
     }
 
     public String getFileType() {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
+    public Long getFileSize() {
+        return fileSize;
     }
 
     public String getFilePath() {
         return filePath;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
     public Note getNote() {
         return note;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setStoredFileName(String storedFileName) {
+        this.storedFileName = storedFileName;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public void setNote(Note note) {
