@@ -70,7 +70,8 @@ public class SecurityConfig {
                 "http://localhost:5176",
                 "http://localhost:5177",
                 "http://localhost:5180" ,
-                "https://secure-notes-api-iota.vercel.app"
+
+              "https://secure-notes-1mwnt0v07-anish22.vercel.app"
         ));
 
         configuration.setAllowedMethods(List.of(
