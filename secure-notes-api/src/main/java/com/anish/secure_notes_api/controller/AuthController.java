@@ -12,16 +12,20 @@ import com.anish.secure_notes_api.repository.UserRepository;
 import com.anish.secure_notes_api.repository.VerificationTokenRepository;
 import com.anish.secure_notes_api.security.JwtService;
 import com.anish.secure_notes_api.service.EmailService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import com.anish.secure_notes_api.dto.ResetPasswordRequest;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -61,7 +65,6 @@ public class AuthController {
         );
 
         user.setEnabled(false);
-
         userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
@@ -74,14 +77,12 @@ public class AuthController {
 
         verificationTokenRepository.save(verificationToken);
 
-        String verificationLink =
-                "https://secure-notes-api-y3hh.onrender.com/api/auth/verify?token=" + token;
+        String verificationLink = frontendUrl + "/verify-email?token=" + token;
 
         emailService.sendEmail(
                 user.getEmail(),
                 "Verify Your Email",
-                "Click the link below to verify your email:\n\n"
-                        + verificationLink
+                "Click the link below to verify your email:\n\n" + verificationLink
         );
 
         return ResponseEntity.ok(
@@ -135,7 +136,6 @@ public class AuthController {
         user.setEnabled(true);
 
         userRepository.save(user);
-
         verificationTokenRepository.delete(verificationToken);
 
         return ResponseEntity.ok("Email verified successfully.");
@@ -162,20 +162,19 @@ public class AuthController {
 
         passwordResetTokenRepository.save(resetToken);
 
-        String link =
-                "https://secure-notes-api-y3hh.onrender.com/api/auth/reset-password?token=" + token;
+        String link = frontendUrl + "/reset-password?token=" + token;
 
         emailService.sendEmail(
                 user.getEmail(),
                 "Reset Password",
-                "Click the link below to reset your password:\n\n"
-                        + link
+                "Click the link below to reset your password:\n\n" + link
         );
 
-        return ResponseEntity.ok(
-                "Password reset link sent to your email."
-        );
+        return ResponseEntity.ok("Password reset link sent to your email.");
     }
+
+    // ================= RESET PASSWORD =================
+
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(
             @RequestBody ResetPasswordRequest request) {
@@ -186,18 +185,13 @@ public class AuthController {
                                 new RuntimeException("Invalid reset token"));
 
         if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest()
-                    .body("Reset token has expired.");
+            return ResponseEntity.badRequest().body("Reset token has expired.");
         }
 
         User user = resetToken.getUser();
-
-        user.setPassword(
-                passwordEncoder.encode(request.getNewPassword())
-        );
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         userRepository.save(user);
-
         passwordResetTokenRepository.delete(resetToken);
 
         return ResponseEntity.ok("Password reset successfully.");
