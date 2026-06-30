@@ -75,7 +75,7 @@ public class AuthController {
         verificationTokenRepository.save(verificationToken);
 
         String verificationLink =
-                "http://localhost:8081/api/auth/verify?token=" + token;
+                "https://secure-notes-api-y3hh.onrender.com/api/auth/verify?token=" + token;
 
         emailService.sendEmail(
                 user.getEmail(),
@@ -163,7 +163,7 @@ public class AuthController {
         passwordResetTokenRepository.save(resetToken);
 
         String link =
-                "http://localhost:8081/api/auth/reset-password?token=" + token;
+                "https://secure-notes-api-y3hh.onrender.com/api/auth/reset-password?token=" + token;
 
         emailService.sendEmail(
                 user.getEmail(),
