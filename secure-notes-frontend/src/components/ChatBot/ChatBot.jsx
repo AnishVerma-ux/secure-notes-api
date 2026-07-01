@@ -50,8 +50,10 @@ function ChatBot() {
             const chatHistory = updatedMessages
                 .filter((m, i) => i > 0)
                 .map(m => ({ role: m.role, content: m.content }));
-
-            const response = await fetch("http://localhost:8081/api/chat", {
+const api = axios.create({
+ baseURL: import.meta.env.VITE_API_URL || "http://localhost:8081/api",
+});
+            const response = await fetch(api, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
