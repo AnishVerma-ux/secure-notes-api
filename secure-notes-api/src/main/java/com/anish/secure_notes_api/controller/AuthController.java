@@ -64,7 +64,7 @@ public class AuthController {
                 passwordEncoder.encode(request.getPassword())
         );
 
-        user.setEnabled(false);
+
         userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
@@ -105,9 +105,7 @@ public class AuthController {
                 passwordEncoder.matches(request.getPassword(), user.getPassword()));
         System.out.println("================================");
 
-        if (!user.isEnabled()) {
-            return ResponseEntity.badRequest().body("Please verify your email first.");
-        }
+
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().body("Invalid password");
@@ -133,7 +131,7 @@ public class AuthController {
         }
 
         User user = verificationToken.getUser();
-        user.setEnabled(true);
+
 
         userRepository.save(user);
         verificationTokenRepository.delete(verificationToken);
