@@ -78,13 +78,17 @@ public class AuthController {
         verificationTokenRepository.save(verificationToken);
 
         String verificationLink = frontendUrl + "/verify-email?token=" + token;
-
-        emailService.sendEmail(
-                user.getEmail(),
-                "Verify Your Email",
-                "Click the link below to verify your email:\n\n" + verificationLink
-        );
-
+try {
+    emailService.sendEmail(
+            user.getEmail(),
+            "Verify Your Email",
+            "Click the link below to verify your email:\n\n" + verificationLink
+    );
+}
+catch(Exception e){
+    System.out.println(e.getMessage());
+    System.out.println("error comes in email sending");
+}
         return ResponseEntity.ok(
                 "Registration successful. Please check your email to verify your account."
         );
