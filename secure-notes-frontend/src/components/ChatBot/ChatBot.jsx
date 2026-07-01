@@ -50,10 +50,8 @@ function ChatBot() {
             const chatHistory = updatedMessages
                 .filter((m, i) => i > 0)
                 .map(m => ({ role: m.role, content: m.content }));
-const api = axios.create({
- baseURL: import.meta.env.VITE_API_URL || "http://localhost:8081/api",
-});
-            const response = await fetch(api, {
+
+            const response = await fetch("https://secure-notes-api-y3hh.onrender.com/api/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
