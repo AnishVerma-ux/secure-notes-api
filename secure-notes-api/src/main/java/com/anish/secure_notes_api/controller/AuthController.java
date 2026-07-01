@@ -12,6 +12,7 @@ import com.anish.secure_notes_api.repository.UserRepository;
 import com.anish.secure_notes_api.repository.VerificationTokenRepository;
 import com.anish.secure_notes_api.security.JwtService;
 import com.anish.secure_notes_api.service.EmailService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,15 +80,22 @@ public class AuthController {
 
         String verificationLink = frontendUrl + "/verify-email?token=" + token;
 try {
-    emailService.sendEmail(
+    boolean res = emailService.sendEmail(
             user.getEmail(),
             "Verify Your Email",
             "Click the link below to verify your email:\n\n" + verificationLink
     );
+    if(!res){
+        return ResponseEntity.ok(
+                "Exception comes in email sender."
+        );
+    }
 }
 catch(Exception e){
     System.out.println(e.getMessage());
-    System.out.println("error comes in email sending");
+  return   ResponseEntity.ok(
+            "Exception comes in authcontroller"
+    );
 }
         return ResponseEntity.ok(
                 "Registration successful. Please check your email to verify your account."
